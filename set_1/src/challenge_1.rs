@@ -11,14 +11,56 @@ pub fn run() {
     assert_eq!(result, expected);
 }
 
-fn hex_to_base64(hex_string: &str) -> String {
+pub fn hex_to_base64(hex_string: &str) -> String {
     // Convert to binary
     let binary_string = hex_to_binary(hex_string);
     // Encode to base64
     binary_to_base64(binary_string)
 }
 
-fn hex_to_binary(hex_string: &str) -> String {
+pub fn binary_to_hex(binary_string: &str) -> String {
+    let bits_chunks_as_str = binary_string
+        .chars()
+        .enumerate()
+        .flat_map(|(i, c)| {
+            if i != 0 && i % 4 == 0 {
+                // slicing in 4 bits chunks
+                Some(' ')
+            } else {
+                None
+            }
+            .into_iter()
+            .chain(std::iter::once(c))
+        })
+        .collect::<String>();
+
+    let chunks: Vec<&str> = bits_chunks_as_str.split(" ").collect();
+
+    chunks
+        .into_iter()
+        .map(|bits| match bits {
+            "0000" => "0",
+            "0001" => "1",
+            "0010" => "2",
+            "0011" => "3",
+            "0100" => "4",
+            "0101" => "5",
+            "0110" => "6",
+            "0111" => "7",
+            "1000" => "8",
+            "1001" => "9",
+            "1010" => "a",
+            "1011" => "b",
+            "1100" => "c",
+            "1101" => "d",
+            "1110" => "e",
+            "1111" => "f",
+            _ => "", // Default case for any unexpected bit pattern
+        })
+        .collect()
+}
+
+pub fn hex_to_binary(hex_string: &str) -> String {
     hex_string
         .chars()
         .map(|hex_byte| match hex_byte {
