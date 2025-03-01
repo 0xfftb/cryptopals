@@ -1,4 +1,4 @@
-use crate::challenge_1::{binary_to_hex, hex_to_binary};
+use crate::challenge_1::{BinaryString, HexString};
 use std::iter::zip;
 
 pub fn run() {
@@ -15,17 +15,14 @@ pub fn run() {
 }
 
 fn xor(a: &str, b: &str) -> Result<String, String> {
-    let a_bin = hex_to_binary(a);
-    let b_bin = hex_to_binary(b);
+    let a_bin = a.to_bin();
+    let b_bin = b.to_bin();
 
     if a_bin.len() != b_bin.len() {
         return Err(String::from("Invalid inputs length"));
     }
 
-    let a_chars = a_bin.chars();
-    let b_chars = b_bin.chars();
-
-    let xord_bits: String = zip(a_chars, b_chars)
+    let xord_bits: String = zip(a_bin.chars(), b_bin.chars())
         .map(|bit_pair| match bit_pair {
             ('0', '0') => '0',
             ('0', '1') => '1',
@@ -35,5 +32,5 @@ fn xor(a: &str, b: &str) -> Result<String, String> {
         })
         .collect();
 
-    Ok(binary_to_hex(&xord_bits))
+    Ok(xord_bits.as_str().to_hex())
 }

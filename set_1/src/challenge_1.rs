@@ -6,19 +6,19 @@ pub fn run() {
     // Expected base64 output
     let expected = "SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t";
 
-    let result = hex_to_base64(input);
+    let result = HexString::to_base64(&input);
 
     assert_eq!(result, expected);
 }
 
 pub fn hex_to_base64(hex_string: &str) -> String {
     // Convert to binary
-    let binary_string = hex_to_binary(hex_string);
+    let binary_string = hex_string.to_bin();
     // Encode to base64
-    binary_to_base64(binary_string)
+    BinaryString::to_base64(&binary_string.as_str())
 }
 
-pub fn binary_to_hex(binary_string: &str) -> String {
+pub fn bin_to_hex(binary_string: &str) -> String {
     let bits_chunks_as_str = binary_string
         .chars()
         .enumerate()
@@ -60,7 +60,7 @@ pub fn binary_to_hex(binary_string: &str) -> String {
         .collect()
 }
 
-pub fn hex_to_binary(hex_string: &str) -> String {
+pub fn hex_to_bin(hex_string: &str) -> String {
     hex_string
         .chars()
         .map(|hex_byte| match hex_byte {
@@ -85,7 +85,7 @@ pub fn hex_to_binary(hex_string: &str) -> String {
         .collect()
 }
 
-fn binary_to_base64(binary_string: String) -> String {
+fn bin_to_base64(binary_string: &str) -> String {
     let bits_chunks_as_str = binary_string
         .chars()
         .enumerate()
@@ -172,4 +172,34 @@ fn binary_to_base64(binary_string: String) -> String {
             _ => "", // Default case for any unexpected bit pattern
         })
         .collect()
+}
+
+pub trait BinaryString {
+    fn to_hex(&self) -> String;
+    fn to_base64(&self) -> String;
+}
+
+impl BinaryString for &str {
+    fn to_hex(&self) -> String {
+        bin_to_hex(&self)
+    }
+
+    fn to_base64(&self) -> String {
+        bin_to_base64(&self)
+    }
+}
+
+pub trait HexString {
+    fn to_bin(&self) -> String;
+    fn to_base64(&self) -> String;
+}
+
+impl HexString for &str {
+    fn to_bin(&self) -> String {
+        hex_to_bin(&self)
+    }
+
+    fn to_base64(&self) -> String {
+        hex_to_base64(&self)
+    }
 }
