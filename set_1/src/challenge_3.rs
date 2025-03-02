@@ -3,16 +3,24 @@ use crate::challenge_2::xor;
 
 use std::collections::HashMap;
 
-struct KeyResult {
-    key: String,
-    chars: HashMap<char, usize>,
+pub struct KeyResult {
+    pub key: String,
+    pub chars: HashMap<char, usize>,
 }
 
 pub fn run() {
     println!("Challenge 3: find XOR'd value");
-
     let hex_string = "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736";
 
+    let result = break_xor_cipher(hex_string);
+
+    println!("Encrytion key found: {}", result.0.key);
+
+    let decypted_msg = xor(hex_string, result.0.key.as_str()).unwrap();
+    println!("Decrypted message: {:?}", decypted_msg.as_str().to_ascii());
+}
+
+pub fn break_xor_cipher(hex_string: &str) -> (KeyResult, f64) {
     let hex_length = hex_string.to_bin().len();
 
     let mut results: Vec<KeyResult> = Vec::new();
@@ -37,21 +45,19 @@ pub fn run() {
         });
     }
 
-    let mut winning_key = results.first().unwrap();
+    let mut winning_index = 0;
     let mut winning_score: f64 = 0.0;
 
-    for result in &results {
+    for (i, result) in results.iter().enumerate() {
         let score = score_text(&result.chars);
         if score > winning_score {
             winning_score = score;
-            winning_key = result;
+            winning_index = i;
         }
     }
 
-    println!("Encrytion key found: {}", winning_key.key);
-
-    let decypted_msg = xor(hex_string, winning_key.key.as_str()).unwrap();
-    println!("Decrypted message: {:?}", decypted_msg.as_str().to_ascii());
+    // Remove the winning key from the vector and return it
+    (results.remove(winning_index), winning_score)
 }
 
 fn count_chars(text: &str) -> HashMap<char, usize> {
