@@ -14,7 +14,7 @@ pub fn run() {
     assert_eq!(result, expected);
 }
 
-fn xor(a: &str, b: &str) -> Result<String, String> {
+pub fn xor(a: &str, b: &str) -> Result<String, String> {
     let a_bin = a.to_bin();
     let b_bin = b.to_bin();
 
